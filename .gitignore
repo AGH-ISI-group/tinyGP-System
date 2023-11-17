@@ -30,3 +30,4 @@ data/
 outputData/
 convertedData/
 evolutionMonitoring/
+*.iml
