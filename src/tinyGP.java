@@ -482,7 +482,7 @@ public class tinyGP {
     }
 
     public static void main(String[] args) {
-        String fname = "data/FUN6/FUN6-[-1.0,1.0]-[-1.0,1.0].dat";
+        String fname = "data/FUN6/FUN6-[-1000.0,1000.0]-[-1000.0,1000.0].dat";
         long s = -1;
 
         if ( args.length == 2 ) {
