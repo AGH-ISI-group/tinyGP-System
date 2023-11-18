@@ -8,17 +8,21 @@ public class Header {
     double upperRangeOfRandomConstants;
     int numberOfFitnessCases;
 
-    public Header(int numberOfVariables, int numberOfConstants, double lowerRangeOfRandomConstants, double upperRangeOfRandomConstants, int numberOfFitnessCases) {
+    int numberOfAxisDivisions;
+
+    public Header(int numberOfVariables, int numberOfConstants, double lowerRangeOfRandomConstants, double upperRangeOfRandomConstants, int numberOfAxisDivisions) {
         this.numberOfVariables = numberOfVariables;
         this.numberOfConstants = numberOfConstants;
         this.lowerRangeOfRandomConstants = lowerRangeOfRandomConstants;
         this.upperRangeOfRandomConstants = upperRangeOfRandomConstants;
-        this.numberOfFitnessCases = numberOfFitnessCases;
+        this.numberOfFitnessCases = Double.valueOf(Math.pow(numberOfAxisDivisions, numberOfVariables)).intValue();
+
+        this.numberOfAxisDivisions = numberOfAxisDivisions;
     }
 
-    public Header(int numberOfVariables) {
+    public Header() {
 
-        this(numberOfVariables, 100, -5, 5, 101);
+        this(1, 100, -5, 5, 101);
     }
 
     @Override

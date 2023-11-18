@@ -9,7 +9,7 @@ public class Generator {
 
         Function fun = Function.FUN6;
         Domain domain = Domain.createDomain(new Pair(-1000 , 1000), new Pair(-1000 , 1000));
-        Header header = new Header(2);
+        Header header = new Header(2, 100, -5, 5, 10);
 
         DataFileGenerator.generate(fun, domain, header);
     }

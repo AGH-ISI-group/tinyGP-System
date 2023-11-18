@@ -43,8 +43,14 @@ public class DataFileGenerator {
 
         writer.write(header.toString());
         writer.newLine();
+        List<String> arrayOfInputsAndTargets;
 
-        List<String> arrayOfInputsAndTargets = generateInputsAndTargets(fun, domain, header.numberOfFitnessCases);
+        if(header.numberOfVariables == 1)
+            arrayOfInputsAndTargets = generateInputsAndTargets1(fun, domain, header.numberOfFitnessCases);
+        else if (header.numberOfVariables == 2)
+            arrayOfInputsAndTargets = generateInputsAndTargets2(fun, domain, header.numberOfAxisDivisions);
+        else
+            throw new RuntimeException("Program doesn't support function with more than two variable");
 
         for(int index = 0; index < header.numberOfFitnessCases; index ++) {
 
@@ -55,7 +61,35 @@ public class DataFileGenerator {
         writer.close();
     }
 
-    static List<String> generateInputsAndTargets(Function fun, Domain domain, int numberOfFitnessCases) {
+    private static List<String> generateInputsAndTargets2(Function fun, Domain domain, int numberOfAxisDivisions) {
+
+        List<String> arrayOfInputsAndTargets = new ArrayList<>();
+
+        for(int i = 0; i < numberOfAxisDivisions; i++) {
+                double inputVal1 = (domain.getPair(0).to - domain.getPair(0).from) / (numberOfAxisDivisions - 1) * i + domain.getPair(0).from;
+
+            for (int j = 0; j < numberOfAxisDivisions; j++) {
+
+                StringBuilder line = new StringBuilder();
+                List<Double> inputValues = new ArrayList<>();
+
+                double inputVal2 = (domain.getPair(1).to - domain.getPair(1).from) / (numberOfAxisDivisions - 1) * j + domain.getPair(1).from;
+
+                inputValues.add(inputVal1);
+                inputValues.add(inputVal2);
+
+                double targetValue = fun.getTargetValue(inputValues);
+
+                line.append(inputVal1).append(" ").append(inputVal2).append(" ").append(targetValue);
+
+                arrayOfInputsAndTargets.add(line.toString());
+            }
+        }
+
+        return arrayOfInputsAndTargets;
+    }
+
+    static List<String> generateInputsAndTargets1(Function fun, Domain domain, int numberOfFitnessCases) {
 
         List<String> arrayOfInputsAndTargets = new ArrayList<>();
 
@@ -64,13 +98,10 @@ public class DataFileGenerator {
             StringBuilder line = new StringBuilder();
             List<Double> inputValues = new ArrayList<>();
 
-            for(int j = 0; j < domain.numberOfVariables; j++) {
+            double inputVal = (domain.getPair(0).to - domain.getPair(0).from) / (numberOfFitnessCases - 1) * i + domain.getPair(0).from;
+            line.append(inputVal).append(" ");
 
-                double inputVal = (domain.getPair(j).to - domain.getPair(j).from) / numberOfFitnessCases * i + domain.getPair(j).from ;
-                line.append(inputVal).append(" ");
-
-                inputValues.add(inputVal);
-            }
+            inputValues.add(inputVal);
 
             double targetVal = fun.getTargetValue(inputValues);
             line.append(targetVal);
