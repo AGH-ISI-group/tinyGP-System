@@ -52,7 +52,7 @@ public class DataFileConverter {
         String lineFromData;
         while((lineFromData = brData.readLine()) != null) {
 
-            writer.write(lineFromData.replace(".", ",").replace(" ", ";") + ";");
+            writer.write(lineFromData.replace(".", ",").replace(" ", "|") + "|");
 
             String tinyGPConvertedFunction = tinyGPFunction;
             for(Map.Entry<String, String> entry : converterOfVariables.entrySet()) {

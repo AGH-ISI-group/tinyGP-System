@@ -32,7 +32,7 @@ public class tinyGP {
     static double avg_len;
     static final int
             MAX_LEN = 10000,
-            POPSIZE = 100000,
+            POPSIZE = 25000,
             DEPTH   = 5,
             GENERATIONS = 100,
             TSIZE = 2;
@@ -247,9 +247,11 @@ public class tinyGP {
                 a1= save_best_indiv( buffer, ++buffercounter, writer );
                 writer.write( " * ");
                 break;
-            case DIV: writer.write( "(");
+            case DIV: writer.write("MyDivide(");
+//                writer.write( "(");
                 a1= save_best_indiv( buffer, ++buffercounter, writer );
-                writer.write( " / ");
+//                writer.write( " / ");
+                writer.write( " ; ");
                 break;
 
         }
@@ -482,7 +484,7 @@ public class tinyGP {
     }
 
     public static void main(String[] args) {
-        String fname = "data/FUN6/FUN6-[-1000.0,1000.0]-[-1000.0,1000.0].dat";
+        String fname = "data/FUN6/FUN6-[-10.0,10.0]-[-10.0,10.0].dat";
         long s = -1;
 
         if ( args.length == 2 ) {
