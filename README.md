@@ -1,1 +1,1 @@
-# tinyGP-System
+# TinyGP-System
