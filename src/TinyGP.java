@@ -37,7 +37,7 @@ public class TinyGP {
             MAX_LEN = 10000,
             POPSIZE = 25000,
             DEPTH   = 5,
-            GENERATIONS = 100,
+            GENERATIONS = 21,
             TSIZE = 2;
     public static final double
             PMUT_PER_NODE  = 0.05,
@@ -479,12 +479,8 @@ public class TinyGP {
     }
 
     public static void main(String[] args) {
-        try {
-            DataFileGenerator.generate(Function.FUN6, Domain.createDomain(new Pair(-10,10), new Pair(-10,10)), new Header(2,100,-5,5,101));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String fileName = "data/FUN6/FUN6-[-10.0,10.0]-[-10.0,10.0].dat";
+
+        String fileName = "data/FUN1/FUN1-[-10.0,10.0].dat";
         long s = -1;
 
         if ( args.length == 2 ) {
