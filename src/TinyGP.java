@@ -193,12 +193,12 @@ public class TinyGP {
                 System.out.print(" / ");
             }
             case SIN -> {
-                System.out.print("sin( ");
+                System.out.print("SIN( ");
                 a1 = printIndiv(buffer, ++bufferCounter);
                 System.out.print(" )");
             }
             case COS -> {
-                System.out.print("cos( ");
+                System.out.print("COS( ");
                 a1 = printIndiv(buffer, ++bufferCounter);
                 System.out.print(" )");
             }
@@ -487,12 +487,12 @@ public class TinyGP {
                 writer.write(" ; ");
             }
             case SIN -> {
-                writer.write("sin( ");
+                writer.write("SIN( ");
                 a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
                 writer.write(" )");
             }
             case COS -> {
-                writer.write("cos( ");
+                writer.write("COS( ");
                 a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
                 writer.write(" )");
             }
