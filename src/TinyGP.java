@@ -23,8 +23,10 @@ public class TinyGP {
         SUB = 111,
         MUL = 112,
         DIV = 113,
+        SIN = 114,
+        COS = 115,
         FSET_START = ADD,
-        FSET_END = DIV;
+        FSET_END = COS;
     static double [] x = new double[FSET_START];
     static double minRandom, maxRandom;
     static char [] program;
@@ -59,6 +61,8 @@ public class TinyGP {
                            else
                                return( num / den );
                        }
+            case SIN : return( Math.sin( run() + run() ) );
+            case COS : return( Math.cos( run() + run() ) );
         }
         return( 0.0 ); // should never get here
     }
@@ -68,7 +72,7 @@ public class TinyGP {
             return( ++bufferCount );
 
         return switch (buffer[bufferCount]) {
-            case ADD, SUB, MUL, DIV -> (traverse(buffer, traverse(buffer, ++bufferCount)));
+            case ADD, SUB, MUL, DIV, SIN, COS -> (traverse(buffer, traverse(buffer, ++bufferCount)));
             default -> (0);
         };
         // should never get here
@@ -146,7 +150,7 @@ public class TinyGP {
         else  {
             prim = (char) (random.nextInt(FSET_END - FSET_START + 1) + FSET_START);
             switch (prim) {
-                case ADD, SUB, MUL, DIV -> {
+                case ADD, SUB, MUL, DIV, SIN, COS -> {
                     buffer[pos] = prim;
                     one_child = grow(buffer, pos + 1, max, depth - 1);
                     if (one_child < 0)
@@ -187,6 +191,16 @@ public class TinyGP {
                 System.out.print("(");
                 a1 = printIndiv(buffer, ++bufferCounter);
                 System.out.print(" / ");
+            }
+            case SIN -> {
+                System.out.print("sin( ");
+                a1 = printIndiv(buffer, ++bufferCounter);
+                System.out.print(" )");
+            }
+            case COS -> {
+                System.out.print("cos( ");
+                a1 = printIndiv(buffer, ++bufferCounter);
+                System.out.print(" )");
             }
         }
         a2= printIndiv( buffer, a1 );
@@ -342,7 +356,7 @@ public class TinyGP {
                     parentcopy[mutsite] = (char) random.nextInt(varNumber + randomNumber);
                 else
                     switch (parentcopy[mutsite]) {
-                        case ADD, SUB, MUL, DIV -> parentcopy[mutsite] =
+                        case ADD, SUB, MUL, DIV, SIN, COS -> parentcopy[mutsite] =
                                 (char) (random.nextInt(FSET_END - FSET_START + 1)
                                         + FSET_START);
                     }
@@ -471,6 +485,16 @@ public class TinyGP {
                 a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
 //                writer.write( " / ");
                 writer.write(" ; ");
+            }
+            case SIN -> {
+                writer.write("sin( ");
+                a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
+                writer.write(" )");
+            }
+            case COS -> {
+                writer.write("cos( ");
+                a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
+                writer.write(" )");
             }
         }
         a2= saveBestIndiv( buffer, a1, writer );
