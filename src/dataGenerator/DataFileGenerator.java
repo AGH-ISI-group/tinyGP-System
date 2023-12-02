@@ -14,9 +14,6 @@ public class DataFileGenerator {
         if(fun.getNumberOfVariables() != domain.numberOfVariables || fun.getNumberOfVariables() != header.numberOfVariables)
             throw new RuntimeException("Wrong domain");
 
-        System.out.println(domain.toString());
-
-
         String path = "data/" + fun + "/";
         String fileName = fun + "-" + domain + ".dat";
         String fullPath = path + fileName;
