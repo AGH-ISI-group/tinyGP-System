@@ -409,7 +409,7 @@ public class TinyGP {
             stats( fitness, pop, gen );
         }
         System.out.print("PROBLEM *NOT* SOLVED\n");
-        System.exit( 1 );
+        //System.exit( 1 );
     }
 
     //my own method
