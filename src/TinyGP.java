@@ -5,8 +5,6 @@
  *
  */
 
-import dataGenerator.*;
-
 import java.util.*;
 import java.io.*;
 
@@ -28,6 +26,8 @@ public class TinyGP {
         FSET_START = ADD,
         FSET_END = COS;
     static double [] x = new double[FSET_START];
+    static int supplementaryConstantsCounter = 0;
+    static Dictionary<Integer, Double> supplementaryConstants = new Hashtable<>();
     static double minRandom, maxRandom;
     static char [] program;
     static int programCounter;
@@ -50,6 +50,8 @@ public class TinyGP {
         char primitive = program[programCounter++];
         if ( primitive < FSET_START )
             return(x[primitive]);
+        if ( primitive > FSET_END)
+            return(supplementaryConstants.get((int) primitive));
         switch ( primitive ) {
             case ADD : return( run() + run() );
             case SUB : return( run() - run() );
@@ -171,6 +173,10 @@ public class TinyGP {
                 System.out.print( x[buffer[bufferCounter]]);
             return( ++bufferCounter );
         }
+        if ( buffer[bufferCounter] > FSET_END){
+            System.out.print( supplementaryConstants.get((int) buffer[bufferCounter]) + " ");
+            return( ++bufferCounter );
+        }
         switch (buffer[bufferCounter]) {
             case ADD -> {
                 System.out.print("(");
@@ -193,19 +199,86 @@ public class TinyGP {
                 System.out.print(" / ");
             }
             case SIN -> {
-                System.out.print("SIN( ");
+                System.out.print("SIN(");
                 a1 = printIndiv(buffer, ++bufferCounter);
-                System.out.print(" )");
+                System.out.print(" + ");
             }
             case COS -> {
-                System.out.print("COS( ");
+                System.out.print("COS(");
                 a1 = printIndiv(buffer, ++bufferCounter);
-                System.out.print(" )");
+                System.out.print(" + ");
             }
         }
         a2= printIndiv( buffer, a1 );
         System.out.print( ")");
         return( a2);
+    }
+
+    boolean canOptimize(char[] program, int[] bufferCounter, int[] maxIndex){
+        boolean a1=true, a2;
+        if ( program[bufferCounter[0]] < FSET_START ) {
+            if ( program[bufferCounter[0]] >= varNumber) {
+                if (maxIndex[0] < bufferCounter[0])
+                    maxIndex[0] = bufferCounter[0];
+                return true;
+            }
+            else {
+                if (maxIndex[0] < bufferCounter[0])
+                    maxIndex[0] = bufferCounter[0];
+                return false;
+            }
+        }
+        if ( program[bufferCounter[0]] > FSET_END){
+            if (maxIndex[0] < bufferCounter[0])
+                maxIndex[0] = bufferCounter[0];
+            return true;
+        }
+        switch (program[bufferCounter[0]]){
+            case ADD, SUB, DIV, MUL, SIN, COS -> {
+                bufferCounter[0]++;
+                a1 = canOptimize(program, bufferCounter, maxIndex);
+                bufferCounter[0]++;
+                a2 = canOptimize(program, bufferCounter, maxIndex);
+                return a1 && a2;
+            }
+        }
+        return false;
+    }
+
+    char[] optimizeFun(char[] old_program){
+        int len = old_program.length;
+        int i = 0;
+        while (i < len) {
+            if (old_program[i] < FSET_START) {
+                i++;
+                continue;
+            }
+            int[] maxIndex = new int[1];
+            maxIndex[0] = i;
+            int[] staticBufferCounter = new int[1];
+            staticBufferCounter[0] = i;
+            if (canOptimize(old_program, staticBufferCounter, maxIndex)) {
+                char[] subProgram = new char[maxIndex[0] - i + 1];
+                System.arraycopy(old_program, i, subProgram, 0, maxIndex[0] - i + 1);
+                System.out.print("Optimized: ");
+                printIndiv(subProgram, 0);
+                System.out.print(" to: ");
+                programCounter = 0;
+                TinyGP.program = subProgram;
+                double result = run();
+                System.out.print(result + "\n");
+                supplementaryConstantsCounter++;
+                int newConstantIndex = FSET_END + supplementaryConstantsCounter;
+                supplementaryConstants.put(newConstantIndex, result);
+                old_program[i] = (char) newConstantIndex;
+                System.arraycopy(old_program, maxIndex[0] + 1, old_program, i + 1, len - maxIndex[0] - 1);
+                len = len - (maxIndex[0] - i);
+            }
+            i++;
+        }
+        char[] optimizedProgram = new char[len];
+        System.arraycopy(old_program, 0, optimizedProgram, 0, len);
+        return optimizedProgram;
     }
 
     void saveStats(String line) {
@@ -261,6 +334,21 @@ public class TinyGP {
         return( pop );
     }
 
+    char[] optimize(char[] from, boolean verbose){
+        char[] fromCopy = new char[from.length];
+        char[] to;
+        if (verbose) {
+            System.arraycopy(from, 0, fromCopy, 0, from.length);
+            System.out.print("\n-------- Optimization Info --------\n");
+        }
+        to = optimizeFun(fromCopy);
+        if (verbose) {
+            System.out.print("Length before optimization: " + from.length + " Length after optimization: " + to.length + "\n");
+            System.out.print("-----------------------------------\n");
+        }
+        return to;
+    }
+
     void stats( double [] fitness, char [][] pop, int gen ) {
         int i, best = random.nextInt(POPSIZE);
         int node_count = 0;
@@ -280,8 +368,8 @@ public class TinyGP {
         System.out.print("Generation="+gen+" Avg Fitness="+(-avgPop)+
                 " Best Fitness="+(-bestPop)+" Avg Size="+ avgLen +
                 "\nBest Individual: ");
-        printIndiv( pop[best], 0 );
-        System.out.print( "\n");
+        printIndiv( optimize(pop[best], true), 0 );
+        System.out.print( "\n\n");
         System.out.flush();
 
         saveBestIndivToCsv(pop[best], 0); //my own code
@@ -487,14 +575,14 @@ public class TinyGP {
                 writer.write(" ; ");
             }
             case SIN -> {
-                writer.write("SIN( ");
+                writer.write("SIN(");
                 a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
-                writer.write(" )");
+                writer.write(" + ");
             }
             case COS -> {
-                writer.write("COS( ");
+                writer.write("COS(");
                 a1 = saveBestIndiv(buffer, ++bufferCounter, writer);
-                writer.write(" )");
+                writer.write(" + ");
             }
         }
         a2= saveBestIndiv( buffer, a1, writer );
@@ -504,7 +592,7 @@ public class TinyGP {
 
     public static void main(String[] args) {
 
-        String fileName = "data/FUN1/FUN1-[-10.0,10.0].dat";
+        String fileName = "data/FUN4/FUN4-[0.0,100.0]-[0.0,100.0].dat";
         long s = -1;
 
         if ( args.length == 2 ) {

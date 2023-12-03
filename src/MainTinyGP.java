@@ -12,7 +12,7 @@ public class MainTinyGP {
 
     public static void main(String[] args) throws IOException {
 
-        List<Function> functions = List.of(Function.FUN2);
+        List<Function> functions = List.of(Function.FUN4);
 
         generateAllDataFiles(functions);
         generateAllByTinyGp(functions);
