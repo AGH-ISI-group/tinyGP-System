@@ -245,7 +245,7 @@ public class TinyGP {
         return false;
     }
 
-    char[] optimizeFun(char[] old_program){
+    char[] optimizeFun(char[] old_program, boolean verbose){
         int len = old_program.length;
         int i = 0;
         while (i < len) {
@@ -260,13 +260,16 @@ public class TinyGP {
             if (canOptimize(old_program, staticBufferCounter, maxIndex)) {
                 char[] subProgram = new char[maxIndex[0] - i + 1];
                 System.arraycopy(old_program, i, subProgram, 0, maxIndex[0] - i + 1);
-                System.out.print("Optimized: ");
-                printIndiv(subProgram, 0);
-                System.out.print(" to: ");
+                if(verbose) {
+                    System.out.print("Optimized: ");
+                    printIndiv(subProgram, 0);
+                    System.out.print(" to: ");
+                }
                 programCounter = 0;
                 TinyGP.program = subProgram;
                 double result = run();
-                System.out.print(result + "\n");
+                if(verbose)
+                    System.out.print(result + "\n");
                 supplementaryConstantsCounter++;
                 int newConstantIndex = FSET_END + supplementaryConstantsCounter;
                 supplementaryConstants.put(newConstantIndex, result);
@@ -337,11 +340,11 @@ public class TinyGP {
     char[] optimize(char[] from, boolean verbose){
         char[] fromCopy = new char[from.length];
         char[] to;
+        System.arraycopy(from, 0, fromCopy, 0, from.length);
         if (verbose) {
-            System.arraycopy(from, 0, fromCopy, 0, from.length);
             System.out.print("\n-------- Optimization Info --------\n");
         }
-        to = optimizeFun(fromCopy);
+        to = optimizeFun(fromCopy, verbose);
         if (verbose) {
             System.out.print("Length before optimization: " + from.length + " Length after optimization: " + to.length + "\n");
             System.out.print("-----------------------------------\n");
