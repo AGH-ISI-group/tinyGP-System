@@ -554,6 +554,10 @@ public class TinyGP {
                 writer.write( x[buffer[bufferCounter]] + "");
             return( ++bufferCounter );
         }
+        if ( buffer[bufferCounter] > FSET_END){
+            System.out.print( supplementaryConstants.get((int) buffer[bufferCounter]) + " ");
+            return( ++bufferCounter );
+        }
         switch (buffer[bufferCounter]) {
             case ADD -> {
                 writer.write("(");
