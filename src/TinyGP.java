@@ -556,7 +556,8 @@ public class TinyGP {
         }
         if ( buffer[bufferCounter] > FSET_END){
             System.out.print( supplementaryConstants.get((int) buffer[bufferCounter]) + " ");
-            return( ++bufferCounter );
+            throw new RuntimeException("This should not happen! The program never should need to access a supplementary constant when saving the best individual");
+            //return( ++bufferCounter );
         }
         switch (buffer[bufferCounter]) {
             case ADD -> {
